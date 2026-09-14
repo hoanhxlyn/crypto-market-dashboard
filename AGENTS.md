@@ -12,20 +12,21 @@
 
 | Task | Command |
 |------|---------|
-| Dev server | `npm run dev` |
-| Build | `npm run build` |
-| Production serve | `npm run start` |
-| Lint | `npm run lint` |
-| Format | `npm run format` |
-| Typecheck | `npm run typecheck` (runs `react-router typegen && tsc`) |
+| Dev server | `bun dev` |
+| Build | `bun run build` |
+| Production serve | `bun run start` |
+| Lint | `bun run lint` |
+| Format | `bun run format` |
+| Typecheck | `bun run typecheck` (runs `react-router typegen && tsgo`) |
 
-**Order matters:** `typecheck` depends on `react-router typegen` first — `.react-router/types/` must exist before `tsc` passes.
+**Order matters:** `typecheck` depends on `react-router typegen` first — `.react-router/types/` must exist before `tsgo` passes.
 
 ## Linting
 
-Biome (not ESLint/Prettier). Config: `biome.json`.
+Biome v2.5.13 (not ESLint/Prettier). Config: `biome.json` with `$schema`.
 - Indent: 2 spaces, line width 80
-- Pre-commit hook (lefthook) runs `biome check --staged --write`
+- Pre-commit hook (lefthook) runs `bunx biome check --staged --write`
+- `.md` files excluded from Biome via `files.includes`
 
 ## Project Structure
 
@@ -47,3 +48,5 @@ app/
 - API types: always validate CoinGecko responses with Zod schemas before use
 - Data fetching: use React Query hooks in `app/hooks/queries.ts`, not raw `fetch`
 - Search/sort params: read from URL via `useSearchParams` (state in URL, not component state)
+- Lockfile: `bun.lock` (not `package-lock.json`)
+- Typecheck uses `tsgo` from `@typescript/native-preview`, not `tsc`
