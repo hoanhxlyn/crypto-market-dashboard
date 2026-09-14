@@ -6,6 +6,7 @@ import {
   Card,
   Group,
   NumberFormatter,
+  Select,
   SimpleGrid,
   Skeleton,
   Stack,
@@ -13,7 +14,9 @@ import {
   Title,
 } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
+import { PriceChart } from "~/components/PriceChart/price-chart";
+import { CURRENCIES, PERIODS } from "~/constants";
 import { useCoinDetail } from "~/hooks/queries";
 
 export function meta({ params }: { params: { id: string } }) {
@@ -22,13 +25,30 @@ export function meta({ params }: { params: { id: string } }) {
 
 export default function CoinDetailPage() {
   const { id } = useParams();
-  const { data: coin, status, refetch, isFetching } = useCoinDetail(id ?? "");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const days = Number(searchParams.get("days") ?? 7);
+  const vsCurrency = searchParams.get("vs_currency") ?? "usd";
+
+  const {
+    data: coin,
+    status,
+    refetch,
+    isFetching,
+  } = useCoinDetail(id ?? "", vsCurrency, days);
+
+  function setParam(key: string, value: string) {
+    setSearchParams((prev) => {
+      prev.set(key, value);
+      return prev;
+    });
+  }
 
   if (status === "pending") {
     return (
       <Stack gap="lg" maw={800} mx="auto" px="lg" py="xl">
         <Skeleton height={40} width={200} />
         <Skeleton height={200} />
+        <Skeleton height={300} />
       </Stack>
     );
   }
@@ -87,7 +107,7 @@ export default function CoinDetailPage() {
               Current Price
             </Text>
             <NumberFormatter
-              value={coin.market_data.current_price.usd}
+              value={coin.market_data.current_price[vsCurrency] ?? 0}
               prefix="$"
               thousandSeparator
               style={{
@@ -106,6 +126,28 @@ export default function CoinDetailPage() {
           </div>
         </SimpleGrid>
       </Card>
+
+      <Group gap="xs">
+        <Select
+          size="compact-sm"
+          data={CURRENCIES}
+          value={vsCurrency}
+          onChange={(v) => v && setParam("vs_currency", v)}
+          w={80}
+        />
+        {PERIODS.map((p) => (
+          <Button
+            key={p.days}
+            size="compact-sm"
+            variant={days === p.days ? "filled" : "default"}
+            onClick={() => setParam("days", String(p.days))}
+          >
+            {p.label}
+          </Button>
+        ))}
+      </Group>
+
+      <PriceChart data={coin} currency={vsCurrency} loading={isFetching} />
     </Stack>
   );
 }

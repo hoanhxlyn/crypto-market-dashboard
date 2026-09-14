@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 import { IconArrowDown, IconArrowUp, IconSearch } from "@tabler/icons-react";
 import { useMemo } from "react";
+import { CURRENCIES, SORT_OPTIONS } from "~/constants";
 import { useFetchCoins } from "~/hooks/queries";
 import { useFilterParams } from "~/hooks/use-filter-params";
 import { CoinCard } from "../components/coin-card";
@@ -39,6 +40,8 @@ export default function HomePage() {
     setSortKey,
     direction,
     setDirection,
+    vsCurrency,
+    setVsCurrency,
   } = useFilterParams();
 
   const { data: coins, status, refetch, isFetching } = useFetchCoins();
@@ -98,13 +101,15 @@ export default function HomePage() {
               style={{ flex: 1, minWidth: 200 }}
             />
             <Select
+              label="Currency"
+              data={CURRENCIES}
+              value={vsCurrency}
+              onChange={(v) => setVsCurrency(v ?? "usd")}
+            />
+            <Select
               label="Sort by"
               checkIconPosition="right"
-              data={[
-                { value: "current_price", label: "Price" },
-                { value: "price_change_percentage_24h", label: "24h change" },
-                { value: "market_cap_rank", label: "Market cap rank" },
-              ]}
+              data={SORT_OPTIONS}
               value={sortKey}
               onChange={(v) => setSortKey((v as SortKey) ?? "market_cap_rank")}
             />

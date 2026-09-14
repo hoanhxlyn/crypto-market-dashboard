@@ -9,7 +9,8 @@ export function useFilterParams() {
   const [debouncedQuery] = useDebouncedValue(query, 300);
 
   const sortKey = (searchParams.get("sort") ?? "market_cap_rank") as SortKey;
-  const direction = (searchParams.get("dir") ?? "desc") as Direction;
+  const direction = (searchParams.get("dir") ?? "asc") as Direction;
+  const vsCurrency = searchParams.get("vs_currency") ?? "usd";
 
   useEffect(() => {
     setSearchParams(
@@ -39,6 +40,14 @@ export function useFilterParams() {
     });
   }
 
+  function setVsCurrency(currency: string) {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("vs_currency", currency);
+      return next;
+    });
+  }
+
   return {
     query,
     setQuery,
@@ -47,5 +56,7 @@ export function useFilterParams() {
     setSortKey,
     direction,
     setDirection,
+    vsCurrency,
+    setVsCurrency,
   };
 }

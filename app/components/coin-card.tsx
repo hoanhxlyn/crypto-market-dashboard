@@ -6,6 +6,7 @@ import {
   NumberFormatter,
   Text,
 } from "@mantine/core";
+import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
 import { Link } from "react-router";
 import { useFetchCoins } from "~/hooks/queries";
 
@@ -49,9 +50,18 @@ export function CoinCard({ coinId }: { coinId: string }) {
           <Text size="xs" c="dimmed">
             Rank #{coin?.market_cap_rank ?? "—"}
           </Text>
-          <Badge color={positive ? "green" : "red"} variant="light">
-            {positive ? "+" : ""}
-            {change?.toFixed(2) ?? "0.00"}%
+          <Badge
+            color={positive ? "green" : "red"}
+            variant="light"
+            leftSection={
+              positive ? (
+                <IconTrendingUp size={14} />
+              ) : (
+                <IconTrendingDown size={14} />
+              )
+            }
+          >
+            {Math.abs(change ?? 0).toFixed(2)}%
           </Badge>
         </Group>
       </Card>

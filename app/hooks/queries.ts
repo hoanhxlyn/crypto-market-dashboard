@@ -5,7 +5,7 @@ import { fetchCoinDetail, fetchCoins } from "~/lib/api";
 export const queryKey = {
   all: ["coins"],
   list: (query: object) => [...queryKey.all, "list", query] as const,
-  detail: (id: string) => [...queryKey.all, "detail", id] as const,
+  detail: (query: object) => [...queryKey.all, "detail", query] as const,
 } as const;
 
 export function useCoinParams() {
@@ -27,10 +27,10 @@ export function useFetchCoins() {
   });
 }
 
-export function useCoinDetail(id: string) {
+export function useCoinDetail(id: string, vsCurrency = "usd", days = 7) {
   return useQuery({
-    queryKey: queryKey.detail(id),
-    queryFn: ({ signal }) => fetchCoinDetail(id, signal),
+    queryKey: queryKey.detail({ id, vsCurrency, days }),
+    queryFn: ({ signal }) => fetchCoinDetail({ id, vsCurrency, days }, signal),
     staleTime: 5 * 60 * 1000,
     enabled: !!id,
   });

@@ -23,9 +23,14 @@ export const coinDetailSchema = z.object({
   }),
   market_cap_rank: z.number().nullable(),
   market_data: z.object({
-    current_price: z.object({ usd: z.number() }),
+    current_price: z.record(z.string(), z.number()),
     price_change_percentage_24h: z.number().nullable(),
+    high_24h: z.record(z.string(), z.number().nullable()),
+    low_24h: z.record(z.string(), z.number().nullable()),
+    market_cap: z.record(z.string(), z.number().nullable()),
+    total_volume: z.record(z.string(), z.number().nullable()),
   }),
+  prices: z.array(z.tuple([z.number(), z.number()])),
 });
 
 export type Coin = z.infer<typeof coinSchema>;

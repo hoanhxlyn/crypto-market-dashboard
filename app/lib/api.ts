@@ -39,23 +39,53 @@ export async function fetchCoins(
   return parsed.data;
 }
 
-export async function fetchCoinDetail(
-  id: string,
-  signal?: AbortSignal,
-): Promise<CoinDetail> {
-  const res = await fetch(
-    `${BASE_URL}/coins/${id}?localization=false&tickers=false&community_data=false&developer_data=false`,
-    { signal },
-  );
+async function checkRateLimit(res: Response) {
   if (res.status === 429) {
     throw new Error("Rate limited by CoinGecko");
   }
   if (!res.ok) {
     throw new Error(`CoinGecko returned ${res.status}`);
   }
+}
 
-  const json = await res.json();
-  const parsed = coinDetailSchema.safeParse(json);
+export async function fetchCoinDetail(
+  params: {
+    id: string;
+    vsCurrency: string;
+    days: number;
+  },
+  signal?: AbortSignal,
+): Promise<CoinDetail> {
+  const detailParams = new URLSearchParams({
+    vs_currency: params.vsCurrency,
+    localization: "false",
+    tickers: "false",
+    community_data: "false",
+    developer_data: "false",
+  });
+  const chartParams = new URLSearchParams({
+    vs_currency: params.vsCurrency,
+    days: String(params.days),
+  });
+
+  const [detailRes, chartRes] = await Promise.all([
+    fetch(`${BASE_URL}/coins/${params.id}?${detailParams}`, { signal }),
+    fetch(`${BASE_URL}/coins/${params.id}/market_chart?${chartParams}`, {
+      signal,
+    }),
+  ]);
+
+  await Promise.all([checkRateLimit(detailRes), checkRateLimit(chartRes)]);
+
+  const [detailJson, chartJson] = await Promise.all([
+    detailRes.json(),
+    chartRes.json(),
+  ]);
+
+  const parsed = coinDetailSchema.safeParse({
+    ...detailJson,
+    prices: chartJson.prices,
+  });
   if (!parsed.success) {
     throw new Error("Unexpected API response shape");
   }
