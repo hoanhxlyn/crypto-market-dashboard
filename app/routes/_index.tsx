@@ -2,8 +2,11 @@ import {
   ActionIcon,
   Alert,
   Button,
+  Card,
+  EmptyState,
   Grid,
   Group,
+  Input,
   Select,
   Stack,
   Text,
@@ -11,11 +14,12 @@ import {
   Title,
 } from "@mantine/core";
 import { IconArrowDown, IconArrowUp, IconSearch } from "@tabler/icons-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useFetchCoins } from "~/hooks/queries";
+import { useFilterParams } from "~/hooks/use-filter-params";
 import { CoinCard } from "../components/coin-card";
 import { LoadingSkeleton } from "../components/loading-skeleton";
-import type { Direction, SortKey } from "../types";
+import type { SortKey } from "../types";
 
 export function meta() {
   return [
@@ -27,14 +31,20 @@ export function meta() {
   ];
 }
 export default function HomePage() {
+  const {
+    query,
+    setQuery,
+    debouncedQuery,
+    sortKey,
+    setSortKey,
+    direction,
+    setDirection,
+  } = useFilterParams();
+
   const { data: coins, status, refetch, isFetching } = useFetchCoins();
 
-  const [query, setQuery] = useState("");
-  const [sortKey, setSortKey] = useState<SortKey>("market_cap_rank");
-  const [direction, setDirection] = useState<Direction>("desc");
-
   const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = debouncedQuery.trim().toLowerCase();
     const filtered = q
       ? (coins ?? []).filter(
           (c) =>
@@ -44,13 +54,13 @@ export default function HomePage() {
       : (coins ?? []);
 
     return [...filtered].sort((a, b) => {
-      const av = a[sortKey];
-      const bv = b[sortKey];
-      const aN = av == null ? -Infinity : Number(av);
-      const bN = bv == null ? -Infinity : Number(bv);
-      return direction === "asc" ? aN - bN : bN - aN;
+      const rawA = a[sortKey];
+      const rawB = b[sortKey];
+      const numA = rawA == null ? -Infinity : Number(rawA);
+      const numB = rawB == null ? -Infinity : Number(rawB);
+      return direction === "asc" ? numA - numB : numB - numA;
     });
-  }, [coins, query, sortKey, direction]);
+  }, [coins, direction, debouncedQuery, sortKey]);
 
   return (
     <Stack gap="lg" maw={1200} mx="auto" px="lg" py="xl">
@@ -79,10 +89,17 @@ export default function HomePage() {
               leftSection={<IconSearch size={16} />}
               value={query}
               onChange={(e) => setQuery(e.currentTarget.value)}
+              rightSection={
+                query ? (
+                  <Input.ClearButton onClick={() => setQuery("")} />
+                ) : undefined
+              }
+              rightSectionPointerEvents="auto"
               style={{ flex: 1, minWidth: 200 }}
             />
             <Select
               label="Sort by"
+              checkIconPosition="right"
               data={[
                 { value: "current_price", label: "Price" },
                 { value: "price_change_percentage_24h", label: "24h change" },
@@ -95,9 +112,7 @@ export default function HomePage() {
               variant="default"
               size="lg"
               aria-label="Toggle sort direction"
-              onClick={() =>
-                setDirection((d) => (d === "asc" ? "desc" : "asc"))
-              }
+              onClick={() => setDirection(direction === "asc" ? "desc" : "asc")}
             >
               {direction === "asc" ? (
                 <IconArrowUp size={18} />
@@ -108,9 +123,13 @@ export default function HomePage() {
           </Group>
 
           {visible.length === 0 ? (
-            <Alert color="gray" title="No results">
-              No coins match "{query}". Try a different name or symbol.
-            </Alert>
+            <Card withBorder padding="xl" radius="md">
+              <EmptyState
+                icon={<IconSearch size={48} />}
+                title="No results"
+                description={`No coins match "${query}". Try a different name or symbol.`}
+              />
+            </Card>
           ) : (
             <Grid>
               {visible.map((coin) => (
