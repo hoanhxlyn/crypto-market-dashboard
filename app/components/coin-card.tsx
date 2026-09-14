@@ -16,11 +16,14 @@ export function CoinCard({ coinId }: { coinId: string }) {
   const positive = (change ?? 0) >= 0;
 
   return (
-    <Link to={`/coins/${coinId}`} style={{ textDecoration: "none" }}>
-      <Card withBorder padding="lg" radius="md">
+    <Link
+      to={`/coins/${coinId}`}
+      style={{ textDecoration: "none", height: "100%" }}
+    >
+      <Card withBorder padding="lg" radius="md" h="100%">
         <Group justify="space-between" align="flex-start">
           <Group gap="sm" wrap="nowrap">
-            <Avatar src={coin?.image} alt={coin?.name} size="lg" radius="sm" />
+            <Avatar src={coin?.image} alt={coin?.name} size="md" radius="sm" />
             <div>
               <Text fw={600} lineClamp={1}>
                 {coin?.name}
