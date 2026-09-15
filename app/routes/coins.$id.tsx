@@ -12,7 +12,7 @@ import {
   Title,
 } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { Link, useParams } from "react-router";
+import { Link, useLocation, useParams } from "react-router";
 import { ChangeBadge } from "~/components/change-badge";
 import { PriceChart } from "~/components/price-chart";
 import { useCoinDetail } from "~/hooks/queries";
@@ -24,6 +24,7 @@ export function meta({ params }: { params: { id: string } }) {
 
 export default function CoinDetailPage() {
   const { id } = useParams();
+  const location = useLocation();
   const { vsCurrency } = useFilterParams();
 
   const {
@@ -54,7 +55,7 @@ export default function CoinDetailPage() {
           <Button loading={isFetching} onClick={() => refetch()}>
             Retry
           </Button>
-          <Button component={Link} to="/" variant="default">
+          <Button component={Link} to={`/${location.search}`} variant="default">
             Back to list
           </Button>
         </Group>
@@ -66,7 +67,7 @@ export default function CoinDetailPage() {
     <Stack gap="lg" maw={800} mx="auto" px="lg" py="xl">
       <Button
         component={Link}
-        to="/"
+        to={`/${location.search}`}
         variant="subtle"
         leftSection={<IconArrowLeft size={16} />}
       >

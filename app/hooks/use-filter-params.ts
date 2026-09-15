@@ -1,5 +1,5 @@
 import { useDebouncedValue } from "@mantine/hooks";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import type { Direction, SortKey } from "~/types";
 
@@ -7,12 +7,17 @@ export function useFilterParams() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const [debouncedQuery] = useDebouncedValue(query, 300);
+  const isInitialMount = useRef(true);
 
   const sortKey = (searchParams.get("sort") ?? "market_cap_rank") as SortKey;
   const direction = (searchParams.get("dir") ?? "asc") as Direction;
   const vsCurrency = searchParams.get("vs_currency") ?? "usd";
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev);

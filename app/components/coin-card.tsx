@@ -1,5 +1,5 @@
 import { Avatar, Card, Group, Text } from "@mantine/core";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { ChangeBadge } from "~/components/change-badge";
 import { useCoinParams, useFetchCoins } from "~/hooks/queries";
 import { formatPrice } from "~/lib/format";
@@ -7,11 +7,12 @@ import { formatPrice } from "~/lib/format";
 export function CoinCard({ coinId }: { coinId: string }) {
   const { data: coins } = useFetchCoins();
   const { vsCurrency } = useCoinParams();
+  const location = useLocation();
   const coin = coins?.find((c) => c.id === coinId);
 
   return (
     <Link
-      to={`/coins/${coinId}`}
+      to={`/coins/${coinId}${location.search}`}
       style={{ textDecoration: "none", height: "100%" }}
     >
       <Card withBorder padding="lg" radius="md" h="100%">
