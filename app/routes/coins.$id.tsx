@@ -73,14 +73,21 @@ export default function CoinDetailPage() {
         Back to list
       </Button>
 
-      <Group gap="md" align="center">
-        <Avatar src={coin.image.large} alt={coin.name} size="xl" radius="md" />
-        <div>
-          <Title order={1}>{coin.name}</Title>
-          <Text size="lg" c="dimmed" tt="uppercase">
-            {coin.symbol}
-          </Text>
-        </div>
+      <Group gap="md" align="center" wrap="wrap" justify="space-between">
+        <Group gap="md" align="center" wrap="wrap">
+          <Avatar
+            src={coin.image.large}
+            alt={coin.name}
+            size="lg"
+            radius="md"
+          />
+          <div style={{ flexGrow: 1 }}>
+            <Title order={1}>{coin.name}</Title>
+            <Text size="lg" c="dimmed" tt="uppercase">
+              {coin.symbol}
+            </Text>
+          </div>
+        </Group>
         <ChangeBadge
           change={coin.market_data.price_change_percentage_24h}
           size="lg"
@@ -88,7 +95,7 @@ export default function CoinDetailPage() {
       </Group>
 
       <Card withBorder padding="lg" radius="md">
-        <SimpleGrid cols={2}>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
           <div>
             <Text size="sm" c="dimmed">
               Current Price

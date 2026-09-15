@@ -44,63 +44,73 @@ export function PriceChart() {
   const prices = points.map((p) => p.price);
   const low = Math.min(...prices);
   const high = Math.max(...prices);
+  const pad = (high - low) * 0.03 || 1;
 
   return (
-    <div>
-      <AreaChart
-        h={HEIGHT}
-        data={points}
-        dataKey="time"
-        series={[{ name: "price", color: rising ? "green.6" : "red.6" }]}
-        withGradient
-        curveType="step"
-        withDots={false}
-        tooltipAnimationDuration={300}
-        strokeWidth={2}
-        tickLine="none"
-        gridAxis="none"
-        xAxisProps={{
-          tickFormatter: formatDay,
-          type: "number",
-          domain: ["dataMin", "dataMax"],
-          minTickGap: 48,
-        }}
-        yAxisProps={{
-          orientation: "right",
-          tickFormatter: formatAxisPrice,
-          width: 64,
-        }}
-        tooltipProps={{
-          content: ({ payload }) => {
-            const filtered = getFilteredChartTooltipPayload(payload);
-            const point = filtered?.[0]?.payload;
-            if (!point) return null;
-            return (
-              <Paper withBorder p="xs" radius="sm">
-                <Stack gap={2}>
-                  <Text size="xs" c="dimmed">
-                    {formatDayTime(point.time)}
-                  </Text>
-                  <Text size="sm" fw={500}>
-                    {formatPrice(point.price, vsCurrency)}
-                  </Text>
-                </Stack>
-              </Paper>
-            );
-          },
-        }}
-      />
-      <Group justify="space-between" mt="xs">
-        <Text size="xs" c="dimmed">
-          Low {formatPrice(low, vsCurrency)}
-        </Text>
-        <Text size="xs" c="dimmed">
-          {data.prices.length} data points
-        </Text>
-        <Text size="xs" c="dimmed">
-          High {formatPrice(high, vsCurrency)}
-        </Text>
-      </Group>
-    </div>
+    <>
+      <Paper withBorder p="md" radius="md">
+        <AreaChart
+          h={HEIGHT}
+          data={points}
+          dataKey="time"
+          series={[{ name: "price", color: rising ? "green.6" : "red.6" }]}
+          withGradient
+          curveType="monotone"
+          withDots={false}
+          tooltipAnimationDuration={300}
+          strokeWidth={2.5}
+          tickLine="none"
+          gridAxis="y"
+          gridProps={{
+            strokeDasharray: "3 3",
+            stroke: "var(--mantine-color-gray-4)",
+          }}
+          xAxisProps={{
+            tickFormatter: formatDay,
+            type: "number",
+            domain: ["dataMin", "dataMax"],
+            minTickGap: 48,
+          }}
+          yAxisProps={{
+            orientation: "right",
+            tickFormatter: formatAxisPrice,
+            width: 64,
+            domain: [low - pad, high + pad],
+          }}
+          tooltipProps={{
+            content: ({ payload }) => {
+              const filtered = getFilteredChartTooltipPayload(payload);
+              const point = filtered?.[0]?.payload;
+              if (!point) return null;
+              return (
+                <Paper withBorder p="xs" radius="sm">
+                  <Stack gap={2}>
+                    <Text size="xs" c="dimmed">
+                      {formatDayTime(point.time)}
+                    </Text>
+                    <Text size="sm" fw={500}>
+                      {formatPrice(point.price, vsCurrency)}
+                    </Text>
+                  </Stack>
+                </Paper>
+              );
+            },
+          }}
+        />
+      </Paper>
+      <Paper withBorder p="sm" radius="md" mt="sm">
+        <Group justify="space-between">
+          <Text size="xs" c="dimmed">
+            Low {formatPrice(low, vsCurrency)}
+          </Text>
+          <Text size="xs" c="dimmed">
+            7 day range
+          </Text>
+          <Text size="xs" c="dimmed">
+            High {formatPrice(high, vsCurrency)}
+          </Text>
+        </Group>
+      </Paper>
+    </>
   );
 }
