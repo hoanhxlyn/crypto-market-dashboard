@@ -1,40 +1,39 @@
 import { AreaChart, getFilteredChartTooltipPayload } from "@mantine/charts";
 import { Group, Skeleton, Text } from "@mantine/core";
 import { useMemo } from "react";
+import { useParams } from "react-router";
+import { useCoinDetail } from "~/hooks/queries";
+import { useFilterParams } from "~/hooks/use-filter-params";
 import {
   formatAxisPrice,
   formatDay,
   formatDayTime,
   formatPrice,
 } from "~/lib/format";
-import type { CoinDetail } from "~/types/coin";
 
 const HEIGHT = 240;
 
-interface PriceChartProps {
-  data: CoinDetail;
-  currency?: string;
-  loading?: boolean;
-}
+export function PriceChart() {
+  const { id } = useParams();
+  const { vsCurrency } = useFilterParams();
 
-export function PriceChart({
-  data,
-  currency = "usd",
-  loading,
-}: PriceChartProps) {
+  const { data, status } = useCoinDetail(id ?? "", vsCurrency);
+
   const points = useMemo(
-    () => data.prices.map(([time, price]) => ({ time, price })),
-    [data.prices],
+    () => (data?.prices ?? []).map(([time, price]) => ({ time, price })),
+    [data?.prices],
   );
 
-  if (loading) {
+  if (status === "pending") {
     return <Skeleton height={HEIGHT} radius="md" />;
   }
 
-  if (points.length < 2) {
+  if (status === "error" || points.length < 2) {
     return (
       <Text size="sm" c="dimmed">
-        Not enough data to chart.
+        {status === "error"
+          ? "Failed to load chart."
+          : "Not enough data to chart."}
       </Text>
     );
   }
@@ -78,7 +77,7 @@ export function PriceChart({
             return (
               <div>
                 <p>{formatDayTime(point.time)}</p>
-                <p>{formatPrice(point.price, currency)}</p>
+                <p>{formatPrice(point.price, vsCurrency)}</p>
               </div>
             );
           },
@@ -86,13 +85,13 @@ export function PriceChart({
       />
       <Group justify="space-between" mt="xs">
         <Text size="xs" c="dimmed">
-          Low {formatPrice(low, currency)}
+          Low {formatPrice(low, vsCurrency)}
         </Text>
         <Text size="xs" c="dimmed">
           {data.prices.length} data points
         </Text>
         <Text size="xs" c="dimmed">
-          High {formatPrice(high, currency)}
+          High {formatPrice(high, vsCurrency)}
         </Text>
       </Group>
     </div>

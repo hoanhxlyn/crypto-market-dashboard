@@ -1,12 +1,10 @@
 import {
   Alert,
   Avatar,
-  Badge,
   Button,
   Card,
   Group,
   NumberFormatter,
-  Select,
   SimpleGrid,
   Skeleton,
   Stack,
@@ -14,10 +12,11 @@ import {
   Title,
 } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { Link, useParams, useSearchParams } from "react-router";
-import { PriceChart } from "~/components/PriceChart/price-chart";
-import { CURRENCIES, PERIODS } from "~/constants";
+import { Link, useParams } from "react-router";
+import { ChangeBadge } from "~/components/change-badge";
+import { PriceChart } from "~/components/price-chart";
 import { useCoinDetail } from "~/hooks/queries";
+import { useFilterParams } from "~/hooks/use-filter-params";
 
 export function meta({ params }: { params: { id: string } }) {
   return [{ title: `Coin Detail — ${params.id}` }];
@@ -25,23 +24,14 @@ export function meta({ params }: { params: { id: string } }) {
 
 export default function CoinDetailPage() {
   const { id } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const days = Number(searchParams.get("days") ?? 7);
-  const vsCurrency = searchParams.get("vs_currency") ?? "usd";
+  const { vsCurrency } = useFilterParams();
 
   const {
     data: coin,
     status,
     refetch,
     isFetching,
-  } = useCoinDetail(id ?? "", vsCurrency, days);
-
-  function setParam(key: string, value: string) {
-    setSearchParams((prev) => {
-      prev.set(key, value);
-      return prev;
-    });
-  }
+  } = useCoinDetail(id ?? "", vsCurrency);
 
   if (status === "pending") {
     return (
@@ -72,9 +62,6 @@ export default function CoinDetailPage() {
     );
   }
 
-  const change = coin.market_data.price_change_percentage_24h;
-  const positive = (change ?? 0) >= 0;
-
   return (
     <Stack gap="lg" maw={800} mx="auto" px="lg" py="xl">
       <Button
@@ -94,10 +81,10 @@ export default function CoinDetailPage() {
             {coin.symbol}
           </Text>
         </div>
-        <Badge color={positive ? "green" : "red"} variant="light" size="lg">
-          {positive ? "+" : ""}
-          {change?.toFixed(2) ?? "0.00"}%
-        </Badge>
+        <ChangeBadge
+          change={coin.market_data.price_change_percentage_24h}
+          size="lg"
+        />
       </Group>
 
       <Card withBorder padding="lg" radius="md">
@@ -126,28 +113,7 @@ export default function CoinDetailPage() {
           </div>
         </SimpleGrid>
       </Card>
-
-      <Group gap="xs">
-        <Select
-          size="compact-sm"
-          data={CURRENCIES}
-          value={vsCurrency}
-          onChange={(v) => v && setParam("vs_currency", v)}
-          w={80}
-        />
-        {PERIODS.map((p) => (
-          <Button
-            key={p.days}
-            size="compact-sm"
-            variant={days === p.days ? "filled" : "default"}
-            onClick={() => setParam("days", String(p.days))}
-          >
-            {p.label}
-          </Button>
-        ))}
-      </Group>
-
-      <PriceChart data={coin} currency={vsCurrency} loading={isFetching} />
+      <PriceChart />
     </Stack>
   );
 }

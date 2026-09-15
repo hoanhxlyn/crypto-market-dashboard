@@ -27,11 +27,10 @@ export function useFetchCoins() {
   });
 }
 
-export function useCoinDetail(id: string, vsCurrency = "usd", days = 7) {
+export function useCoinDetail(id: string, vsCurrency = "usd") {
   return useQuery({
-    queryKey: queryKey.detail({ id, vsCurrency, days }),
-    queryFn: ({ signal }) => fetchCoinDetail({ id, vsCurrency, days }, signal),
-    staleTime: 5 * 60 * 1000,
+    queryKey: queryKey.detail({ id, vsCurrency }),
+    queryFn: ({ signal }) => fetchCoinDetail({ id, vsCurrency }, signal),
     enabled: !!id,
   });
 }

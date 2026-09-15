@@ -52,7 +52,6 @@ export async function fetchCoinDetail(
   params: {
     id: string;
     vsCurrency: string;
-    days: number;
   },
   signal?: AbortSignal,
 ): Promise<CoinDetail> {
@@ -65,7 +64,7 @@ export async function fetchCoinDetail(
   });
   const chartParams = new URLSearchParams({
     vs_currency: params.vsCurrency,
-    days: String(params.days),
+    days: "7",
   });
 
   const [detailRes, chartRes] = await Promise.all([

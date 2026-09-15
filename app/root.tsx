@@ -1,8 +1,11 @@
+import "@mantine/core/styles.css";
+
 import {
   Code,
   ColorSchemeScript,
   Container,
   MantineProvider,
+  mantineHtmlProps,
   Text,
   Title,
 } from "@mantine/core";
@@ -18,12 +21,11 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import "@mantine/core/styles.css";
-import "@mantine/charts/styles.css";
+import theme from "./config/mantine";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" {...mantineHtmlProps}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -32,7 +34,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ColorSchemeScript />
       </head>
       <body>
-        {children}
+        <MantineProvider theme={theme}>{children}</MantineProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -43,7 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000,
+      staleTime: 5 * 60 * 1000,
       retry: 3,
       retryDelay: 1000,
     },
@@ -57,9 +59,7 @@ export function HydrateFallback() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <MantineProvider>
-        <Outlet />
-      </MantineProvider>
+      <Outlet />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

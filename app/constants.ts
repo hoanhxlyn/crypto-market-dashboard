@@ -3,7 +3,6 @@ export const CURRENCIES = [
   { value: "eur", label: "EUR" },
   { value: "gbp", label: "GBP" },
   { value: "jpy", label: "JPY" },
-  { value: "cny", label: "CNY" },
   { value: "aud", label: "AUD" },
   { value: "cad", label: "CAD" },
   { value: "chf", label: "CHF" },
@@ -16,11 +15,4 @@ export const SORT_OPTIONS = [
   { value: "current_price", label: "Price" },
   { value: "price_change_percentage_24h", label: "24h change" },
   { value: "market_cap_rank", label: "Market cap rank" },
-] as const;
-
-export const PERIODS = [
-  { label: "1D", days: 1 },
-  { label: "7D", days: 7 },
-  { label: "30D", days: 30 },
-  { label: "90D", days: 90 },
 ] as const;

@@ -1,20 +1,11 @@
-import {
-  Avatar,
-  Badge,
-  Card,
-  Group,
-  NumberFormatter,
-  Text,
-} from "@mantine/core";
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
+import { Avatar, Card, Group, NumberFormatter, Text } from "@mantine/core";
 import { Link } from "react-router";
+import { ChangeBadge } from "~/components/change-badge";
 import { useFetchCoins } from "~/hooks/queries";
 
 export function CoinCard({ coinId }: { coinId: string }) {
   const { data: coins } = useFetchCoins();
   const coin = coins?.find((c) => c.id === coinId);
-  const change = coin?.price_change_percentage_24h;
-  const positive = (change ?? 0) >= 0;
 
   return (
     <Link
@@ -50,19 +41,7 @@ export function CoinCard({ coinId }: { coinId: string }) {
           <Text size="xs" c="dimmed">
             Rank #{coin?.market_cap_rank ?? "—"}
           </Text>
-          <Badge
-            color={positive ? "green" : "red"}
-            variant="light"
-            leftSection={
-              positive ? (
-                <IconTrendingUp size={14} />
-              ) : (
-                <IconTrendingDown size={14} />
-              )
-            }
-          >
-            {Math.abs(change ?? 0).toFixed(2)}%
-          </Badge>
+          <ChangeBadge change={coin?.price_change_percentage_24h} />
         </Group>
       </Card>
     </Link>
