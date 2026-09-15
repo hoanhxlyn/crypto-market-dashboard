@@ -3,6 +3,7 @@ import {
   Alert,
   Button,
   Card,
+  Container,
   EmptyState,
   Grid,
   Group,
@@ -11,7 +12,6 @@ import {
   Stack,
   Text,
   TextInput,
-  Title,
 } from "@mantine/core";
 import { IconArrowDown, IconArrowUp, IconSearch } from "@tabler/icons-react";
 import { useMemo } from "react";
@@ -66,9 +66,7 @@ export default function HomePage() {
   }, [coins, direction, debouncedQuery, sortKey]);
 
   return (
-    <Stack gap="lg" maw={1200} mx="auto" px="lg" py="xl">
-      <Title order={1}> Crypto Market </Title>
-
+    <Container size="xl" py="xl">
       {status === "pending" && <LoadingSkeleton />}
 
       {status === "error" && (
@@ -85,7 +83,7 @@ export default function HomePage() {
       )}
 
       {status === "success" && (
-        <>
+        <Stack>
           <Group align="flex-end" gap="sm">
             <TextInput
               placeholder="Search by name or symbol"
@@ -148,8 +146,8 @@ export default function HomePage() {
               ))}
             </Grid>
           )}
-        </>
+        </Stack>
       )}
-    </Stack>
+    </Container>
   );
 }
