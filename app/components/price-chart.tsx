@@ -1,5 +1,5 @@
 import { AreaChart, getFilteredChartTooltipPayload } from "@mantine/charts";
-import { Group, Skeleton, Text } from "@mantine/core";
+import { Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { useParams } from "react-router";
 import { useCoinDetail } from "~/hooks/queries";
@@ -53,8 +53,9 @@ export function PriceChart() {
         dataKey="time"
         series={[{ name: "price", color: rising ? "green.6" : "red.6" }]}
         withGradient
-        curveType="monotone"
+        curveType="step"
         withDots={false}
+        tooltipAnimationDuration={300}
         strokeWidth={2}
         tickLine="none"
         gridAxis="none"
@@ -75,10 +76,16 @@ export function PriceChart() {
             const point = filtered?.[0]?.payload;
             if (!point) return null;
             return (
-              <div>
-                <p>{formatDayTime(point.time)}</p>
-                <p>{formatPrice(point.price, vsCurrency)}</p>
-              </div>
+              <Paper withBorder p="xs" radius="sm">
+                <Stack gap={2}>
+                  <Text size="xs" c="dimmed">
+                    {formatDayTime(point.time)}
+                  </Text>
+                  <Text size="sm" fw={500}>
+                    {formatPrice(point.price, vsCurrency)}
+                  </Text>
+                </Stack>
+              </Paper>
             );
           },
         }}

@@ -1,10 +1,12 @@
-import { Avatar, Card, Group, NumberFormatter, Text } from "@mantine/core";
+import { Avatar, Card, Group, Text } from "@mantine/core";
 import { Link } from "react-router";
 import { ChangeBadge } from "~/components/change-badge";
-import { useFetchCoins } from "~/hooks/queries";
+import { useCoinParams, useFetchCoins } from "~/hooks/queries";
+import { formatPrice } from "~/lib/format";
 
 export function CoinCard({ coinId }: { coinId: string }) {
   const { data: coins } = useFetchCoins();
+  const { vsCurrency } = useCoinParams();
   const coin = coins?.find((c) => c.id === coinId);
 
   return (
@@ -25,21 +27,15 @@ export function CoinCard({ coinId }: { coinId: string }) {
               </Text>
             </div>
           </Group>
-          <NumberFormatter
-            value={coin?.current_price ?? 0}
-            prefix="$"
-            thousandSeparator
-            style={{
-              fontWeight: 700,
-              fontSize: "var(--mantine-font-size-lg)",
-              textAlign: "right",
-            }}
-          />
+
+          <Text size="xs" c="dimmed">
+            Rank #{coin?.market_cap_rank ?? "—"}
+          </Text>
         </Group>
 
         <Group justify="space-between" mt="md">
-          <Text size="xs" c="dimmed">
-            Rank #{coin?.market_cap_rank ?? "—"}
+          <Text fw={700} style={{ fontSize: "var(--mantine-font-size-lg)" }}>
+            {formatPrice(coin?.current_price ?? 0, vsCurrency)}
           </Text>
           <ChangeBadge change={coin?.price_change_percentage_24h} />
         </Group>

@@ -102,6 +102,7 @@ export default function HomePage() {
             />
             <Select
               label="Currency"
+              checkIconPosition="right"
               data={CURRENCIES}
               value={vsCurrency}
               onChange={(v) => setVsCurrency(v ?? "usd")}
