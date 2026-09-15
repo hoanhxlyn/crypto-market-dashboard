@@ -1,7 +1,6 @@
 import {
   Alert,
   Avatar,
-  Badge,
   Button,
   Card,
   Group,
@@ -14,7 +13,10 @@ import {
 } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Link, useParams } from "react-router";
+import { ChangeBadge } from "~/components/change-badge";
+import { PriceChart } from "~/components/price-chart";
 import { useCoinDetail } from "~/hooks/queries";
+import { useFilterParams } from "~/hooks/use-filter-params";
 
 export function meta({ params }: { params: { id: string } }) {
   return [{ title: `Coin Detail — ${params.id}` }];
@@ -22,13 +24,21 @@ export function meta({ params }: { params: { id: string } }) {
 
 export default function CoinDetailPage() {
   const { id } = useParams();
-  const { data: coin, status, refetch, isFetching } = useCoinDetail(id ?? "");
+  const { vsCurrency } = useFilterParams();
+
+  const {
+    data: coin,
+    status,
+    refetch,
+    isFetching,
+  } = useCoinDetail(id ?? "", vsCurrency);
 
   if (status === "pending") {
     return (
       <Stack gap="lg" maw={800} mx="auto" px="lg" py="xl">
         <Skeleton height={40} width={200} />
         <Skeleton height={200} />
+        <Skeleton height={300} />
       </Stack>
     );
   }
@@ -52,9 +62,6 @@ export default function CoinDetailPage() {
     );
   }
 
-  const change = coin.market_data.price_change_percentage_24h;
-  const positive = (change ?? 0) >= 0;
-
   return (
     <Stack gap="lg" maw={800} mx="auto" px="lg" py="xl">
       <Button
@@ -66,28 +73,35 @@ export default function CoinDetailPage() {
         Back to list
       </Button>
 
-      <Group gap="md" align="center">
-        <Avatar src={coin.image.large} alt={coin.name} size="xl" radius="md" />
-        <div>
-          <Title order={1}>{coin.name}</Title>
-          <Text size="lg" c="dimmed" tt="uppercase">
-            {coin.symbol}
-          </Text>
-        </div>
-        <Badge color={positive ? "green" : "red"} variant="light" size="lg">
-          {positive ? "+" : ""}
-          {change?.toFixed(2) ?? "0.00"}%
-        </Badge>
+      <Group gap="md" align="center" wrap="wrap" justify="space-between">
+        <Group gap="md" align="center" wrap="wrap">
+          <Avatar
+            src={coin.image.large}
+            alt={coin.name}
+            size="lg"
+            radius="md"
+          />
+          <div style={{ flexGrow: 1 }}>
+            <Title order={1}>{coin.name}</Title>
+            <Text size="lg" c="dimmed" tt="uppercase">
+              {coin.symbol}
+            </Text>
+          </div>
+        </Group>
+        <ChangeBadge
+          change={coin.market_data.price_change_percentage_24h}
+          size="lg"
+        />
       </Group>
 
       <Card withBorder padding="lg" radius="md">
-        <SimpleGrid cols={2}>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>
           <div>
             <Text size="sm" c="dimmed">
               Current Price
             </Text>
             <NumberFormatter
-              value={coin.market_data.current_price.usd}
+              value={coin.market_data.current_price[vsCurrency] ?? 0}
               prefix="$"
               thousandSeparator
               style={{
@@ -106,6 +120,7 @@ export default function CoinDetailPage() {
           </div>
         </SimpleGrid>
       </Card>
+      <PriceChart />
     </Stack>
   );
 }
