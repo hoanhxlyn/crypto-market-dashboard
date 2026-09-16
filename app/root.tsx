@@ -1,4 +1,5 @@
 import "@mantine/core/styles.css";
+import "~/transitions.css";
 
 import {
   Code,
@@ -31,10 +32,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="auto" />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme} defaultColorScheme="auto">
+          {children}
+        </MantineProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
