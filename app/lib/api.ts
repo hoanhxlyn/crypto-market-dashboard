@@ -23,12 +23,7 @@ export async function fetchCoins(
   const res = await fetch(`${BASE_URL}/coins/markets?${searchParams}`, {
     signal,
   });
-  if (res.status === 429) {
-    throw new Error("Rate limited by CoinGecko");
-  }
-  if (!res.ok) {
-    throw new Error(`CoinGecko returned ${res.status}`);
-  }
+  await checkRateLimit(res);
 
   const json = await res.json();
   const parsed = coinArraySchema.safeParse(json);
