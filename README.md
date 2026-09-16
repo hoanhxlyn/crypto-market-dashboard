@@ -1,5 +1,7 @@
 # Crypto Market Dashboard
 
+[![Deploy](https://img.shields.io/badge/Live_Preview-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://charming-figolla-931f3d.netlify.app/)
+
 Live top-20 cryptocurrencies by market cap, powered by CoinGecko.
 
 ## Prerequisites
