@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router";
 import { fetchCoinDetail, fetchCoins } from "~/lib/api";
+import { useFilterParams } from "./use-filter-params";
 
 export const queryKey = {
   all: ["coins"],
@@ -8,22 +8,13 @@ export const queryKey = {
   detail: (query: object) => [...queryKey.all, "detail", query] as const,
 } as const;
 
-export function useCoinParams() {
-  const [searchParams] = useSearchParams();
-  return {
-    vsCurrency: searchParams.get("vs_currency") ?? "usd",
-    order: searchParams.get("order") ?? "market_cap_desc",
-    page: Number(searchParams.get("page") ?? 1),
-    perPage: Number(searchParams.get("per_page") ?? 20),
-  };
-}
-
 export function useFetchCoins() {
-  const params = useCoinParams();
+  const { vsCurrency, order, perPage, page } = useFilterParams();
 
   return useQuery({
-    queryKey: queryKey.list(params),
-    queryFn: ({ signal }) => fetchCoins(params, signal),
+    queryKey: queryKey.list({ vsCurrency, order, perPage, page }),
+    queryFn: ({ signal }) =>
+      fetchCoins({ vsCurrency, order, perPage, page }, signal),
   });
 }
 

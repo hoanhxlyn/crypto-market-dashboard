@@ -12,6 +12,9 @@ export function useFilterParams() {
   const sortKey = (searchParams.get("sort") ?? "market_cap_rank") as SortKey;
   const direction = (searchParams.get("dir") ?? "asc") as Direction;
   const vsCurrency = searchParams.get("vs_currency") ?? "usd";
+  const order = searchParams.get("order") ?? "market_cap_desc";
+  const perPage = Number(searchParams.get("per_page") ?? 20);
+  const page = Number(searchParams.get("page") ?? 1);
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -53,6 +56,14 @@ export function useFilterParams() {
     });
   }
 
+  function setPage(p: number) {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("page", String(p));
+      return next;
+    });
+  }
+
   return {
     query,
     setQuery,
@@ -63,5 +74,9 @@ export function useFilterParams() {
     setDirection,
     vsCurrency,
     setVsCurrency,
+    order,
+    perPage,
+    page,
+    setPage,
   };
 }

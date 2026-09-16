@@ -1,5 +1,5 @@
 import "@mantine/core/styles.css";
-import "~/transitions.css";
+import "~/styles/transitions.css";
 
 import {
   Code,

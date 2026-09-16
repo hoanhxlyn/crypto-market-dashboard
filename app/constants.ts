@@ -16,3 +16,5 @@ export const SORT_OPTIONS = [
   { value: "price_change_percentage_24h", label: "24h change" },
   { value: "market_cap_rank", label: "Market cap rank" },
 ] as const;
+
+export const MAX_PAGES = 10;

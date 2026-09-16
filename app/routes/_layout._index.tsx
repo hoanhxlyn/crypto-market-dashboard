@@ -8,6 +8,7 @@ import {
   Grid,
   Group,
   Input,
+  Pagination,
   Select,
   Stack,
   Text,
@@ -15,7 +16,8 @@ import {
 } from "@mantine/core";
 import { IconArrowDown, IconArrowUp, IconSearch } from "@tabler/icons-react";
 import { useMemo } from "react";
-import { CURRENCIES, SORT_OPTIONS } from "~/constants";
+import classes from "~/styles/home.module.css";
+import { CURRENCIES, MAX_PAGES, SORT_OPTIONS } from "~/constants";
 import { useFetchCoins } from "~/hooks/queries";
 import { useFilterParams } from "~/hooks/use-filter-params";
 import { CoinCard } from "../components/coin-card";
@@ -27,10 +29,11 @@ export function meta() {
     { title: "Crypto Market Dashboard" },
     {
       name: "description",
-      content: "Live top-20 cryptocurrencies by market cap",
+      content: "Live top cryptocurrencies by market cap",
     },
   ];
 }
+
 export default function HomePage() {
   const {
     query,
@@ -42,19 +45,23 @@ export default function HomePage() {
     setDirection,
     vsCurrency,
     setVsCurrency,
+    perPage,
+    page,
+    setPage,
   } = useFilterParams();
 
   const { data: coins, status, refetch, isFetching } = useFetchCoins();
 
   const visible = useMemo(() => {
+    if (!coins) return [];
     const q = debouncedQuery.trim().toLowerCase();
     const filtered = q
-      ? (coins ?? []).filter(
+      ? coins.filter(
           (c) =>
             c.name.toLowerCase().includes(q) ||
             c.symbol.toLowerCase().includes(q),
         )
-      : (coins ?? []);
+      : coins;
 
     return [...filtered].sort((a, b) => {
       const rawA = a[sortKey];
@@ -66,7 +73,7 @@ export default function HomePage() {
   }, [coins, direction, debouncedQuery, sortKey]);
 
   return (
-    <Container size="xl" py="xl">
+    <Container size="xl" className={classes.container}>
       {status === "pending" && <LoadingSkeleton />}
 
       {status === "error" && (
@@ -83,7 +90,7 @@ export default function HomePage() {
       )}
 
       {status === "success" && (
-        <Stack>
+        <Stack className={classes.stack}>
           <Group align="flex-end" gap="sm">
             <TextInput
               placeholder="Search by name or symbol"
@@ -135,16 +142,31 @@ export default function HomePage() {
               />
             </Card>
           ) : (
-            <Grid>
-              {visible.map((coin) => (
-                <Grid.Col
-                  key={coin.id}
-                  span={{ base: 12, sm: 6, md: 4, lg: 3 }}
-                >
-                  <CoinCard coinId={coin.id} />
-                </Grid.Col>
-              ))}
-            </Grid>
+            <>
+              <Grid>
+                {visible.map((coin) => (
+                  <Grid.Col
+                    key={coin.id}
+                    span={{ base: 12, sm: 6, md: 4, lg: 3 }}
+                  >
+                    <CoinCard coin={coin} />
+                  </Grid.Col>
+                ))}
+              </Grid>
+
+              <Group justify="center" className={classes.pagination}>
+                <Pagination
+                  value={page}
+                  onChange={setPage}
+                  total={MAX_PAGES}
+                  siblings={1}
+                  boundaries={1}
+                />
+                <Text size="sm" c="dimmed">
+                  {perPage} coins per page
+                </Text>
+              </Group>
+            </>
           )}
         </Stack>
       )}
