@@ -28,23 +28,35 @@ Biome v2.5.13 (not ESLint/Prettier). Config: `biome.json` with `$schema`.
 - Pre-commit hook (lefthook) runs `bunx biome check --staged --write`
 - `.md` files excluded from Biome via `files.includes`
 
+## Deployment
+
+Netlify auto-detects React Router and handles build/publish. `@netlify/vite-plugin-react-router` is in the Vite config.
+- `netlify.toml` contains only the SPA fallback redirect (`/* -> /index.html`)
+- No GitHub Actions — Netlify builds from the repo directly
+- Do not add a `[build]` section to `netlify.toml`; Netlify auto-detects for React Router
+
 ## Project Structure
 
 ```
 app/
   root.tsx          — Layout, QueryClientProvider, MantineProvider, ErrorBoundary
   routes.ts         — flatRoutes() from @react-router/fs-routes
-  routes/           — File-based routing (index + coin detail)
-  components/       — UI components (coin-card, loading-skeleton)
-  hooks/queries.ts  — React Query hooks + useCoinParams (reads URL search params)
+  routes/           — File-based routing (_layout prefix = nested layout routes)
+  components/       — UI components (coin-card, price-chart, change-badge, theme-toggle, loading-skeleton)
+  hooks/queries.ts  — React Query hooks + useFilterParams (reads URL search params)
   lib/api.ts        — CoinGecko fetch functions (with Zod validation)
+  lib/format.ts     — Number/currency formatting helpers
   types/coin.ts     — Coin/CoinDetail Zod schemas + inferred types
+  config/mantine.ts — Mantine theme config
+  styles/           — CSS modules (`.module.css`) + global transitions
 ```
 
 ## Conventions
 
 - Path alias: `~/` maps to `app/` (tsconfig paths)
 - File-based routing via `@react-router/fs-routes` — add routes by creating files in `app/routes/`
+- Route naming: `_layout` prefix for nested layout routes (e.g. `_layout._index.tsx`, `_layout.coins.$id.tsx`)
+- Styling: CSS modules (`.module.css`) + Mantine's PostCSS preset — not Tailwind
 - API types: always validate CoinGecko responses with Zod schemas before use
 - Data fetching: use React Query hooks in `app/hooks/queries.ts`, not raw `fetch`
 - Search/sort params: read from URL via `useSearchParams` (state in URL, not component state)

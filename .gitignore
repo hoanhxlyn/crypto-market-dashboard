@@ -5,5 +5,9 @@ node_modules/
 # React Router
 .react-router/
 build/
+
+# Netlify
+.netlify/
+
 .agents/
 .mimocode/
