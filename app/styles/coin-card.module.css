@@ -1,0 +1,8 @@
+.link {
+  text-decoration: none;
+  height: 100%;
+}
+
+.price {
+  font-size: var(--mantine-font-size-lg);
+}

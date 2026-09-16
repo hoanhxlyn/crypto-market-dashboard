@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router";
 import { ChangeBadge } from "~/components/change-badge";
 import { useFilterParams } from "~/hooks/use-filter-params";
 import { formatPrice } from "~/lib/format";
+import classes from "~/styles/coin-card.module.css";
 import type { Coin } from "~/types/coin";
 
 export function CoinCard({ coin }: { coin: Coin }) {
@@ -10,19 +11,16 @@ export function CoinCard({ coin }: { coin: Coin }) {
   const location = useLocation();
 
   return (
-    <Link
-      to={`/coins/${coin.id}${location.search}`}
-      style={{ textDecoration: "none", height: "100%" }}
-    >
-      <Card withBorder padding="lg" radius="md" h="100%">
+    <Link to={`/coins/${coin.id}${location.search}`} className={classes.link}>
+      <Card withBorder padding="sm" radius="md" h="100%">
         <Group justify="space-between" align="flex-start">
-          <Group gap="sm" wrap="nowrap">
-            <Avatar src={coin.image} alt={coin.name} size="md" radius="sm" />
+          <Group gap="xs" wrap="nowrap">
+            <Avatar src={coin.image} alt={coin.name} size="sm" radius="sm" />
             <div>
-              <Text fw={600} lineClamp={1}>
+              <Text fw={600} size="sm" lineClamp={1}>
                 {coin.name}
               </Text>
-              <Text size="sm" c="dimmed" tt="uppercase">
+              <Text size="xs" c="dimmed" tt="uppercase">
                 {coin.symbol}
               </Text>
             </div>
@@ -33,8 +31,8 @@ export function CoinCard({ coin }: { coin: Coin }) {
           </Text>
         </Group>
 
-        <Group justify="space-between" mt="md">
-          <Text fw={700} style={{ fontSize: "var(--mantine-font-size-lg)" }}>
+        <Group justify="space-between" mt="sm">
+          <Text fw={700} className={classes.price}>
             {formatPrice(coin.current_price, vsCurrency)}
           </Text>
           <ChangeBadge change={coin.price_change_percentage_24h} />

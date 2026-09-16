@@ -16,10 +16,10 @@ import {
 } from "@mantine/core";
 import { IconArrowDown, IconArrowUp, IconSearch } from "@tabler/icons-react";
 import { useMemo } from "react";
-import classes from "~/styles/home.module.css";
 import { CURRENCIES, MAX_PAGES, SORT_OPTIONS } from "~/constants";
 import { useFetchCoins } from "~/hooks/queries";
 import { useFilterParams } from "~/hooks/use-filter-params";
+import classes from "~/styles/home.module.css";
 import { CoinCard } from "../components/coin-card";
 import { LoadingSkeleton } from "../components/loading-skeleton";
 import type { SortKey } from "../types";
@@ -73,87 +73,99 @@ export default function HomePage() {
   }, [coins, direction, debouncedQuery, sortKey]);
 
   return (
-    <Container size="xl" className={classes.container}>
-      {status === "pending" && <LoadingSkeleton />}
-
-      {status === "error" && (
-        <>
-          <Alert color="red" title="Failed to load data">
-            <Text size="sm">
-              Unable to reach CoinGecko. Check your connection and try again.
-            </Text>
-          </Alert>
-          <Button loading={isFetching} onClick={() => refetch()}>
-            Retry
-          </Button>
-        </>
+    <>
+      {status === "pending" && (
+        <div className={classes.skeleton}>
+          <LoadingSkeleton />
+        </div>
       )}
 
-      {status === "success" && (
-        <Stack className={classes.stack}>
-          <Group align="flex-end" gap="sm">
-            <TextInput
-              placeholder="Search by name or symbol"
-              leftSection={<IconSearch size={16} />}
-              value={query}
-              onChange={(e) => setQuery(e.currentTarget.value)}
-              rightSection={
-                query ? (
-                  <Input.ClearButton onClick={() => setQuery("")} />
-                ) : undefined
-              }
-              rightSectionPointerEvents="auto"
-              style={{ flex: 1, minWidth: 200 }}
-            />
-            <Select
-              label="Currency"
-              checkIconPosition="right"
-              data={CURRENCIES}
-              value={vsCurrency}
-              onChange={(v) => setVsCurrency(v ?? "usd")}
-            />
-            <Select
-              label="Sort by"
-              checkIconPosition="right"
-              data={SORT_OPTIONS}
-              value={sortKey}
-              onChange={(v) => setSortKey((v as SortKey) ?? "market_cap_rank")}
-            />
-            <ActionIcon
-              variant="default"
-              size="lg"
-              aria-label="Toggle sort direction"
-              onClick={() => setDirection(direction === "asc" ? "desc" : "asc")}
-            >
-              {direction === "asc" ? (
-                <IconArrowUp size={18} />
-              ) : (
-                <IconArrowDown size={18} />
-              )}
-            </ActionIcon>
-          </Group>
+      <Container size="xl" className={classes.container}>
+        {status === "error" && (
+          <>
+            <Alert color="red" title="Failed to load data">
+              <Text size="sm">
+                Unable to reach CoinGecko. Check your connection and try again.
+              </Text>
+            </Alert>
+            <Button loading={isFetching} onClick={() => refetch()}>
+              Retry
+            </Button>
+          </>
+        )}
 
-          {visible.length === 0 ? (
-            <Card withBorder padding="xl" radius="md">
-              <EmptyState
-                icon={<IconSearch size={48} />}
-                title="No results"
-                description={`No coins match "${query}". Try a different name or symbol.`}
+        {status === "success" && (
+          <Stack className={classes.stack}>
+            <Group align="flex-end" gap="sm">
+              <TextInput
+                placeholder="Search by name or symbol"
+                leftSection={<IconSearch size={16} />}
+                value={query}
+                onChange={(e) => setQuery(e.currentTarget.value)}
+                rightSection={
+                  query ? (
+                    <Input.ClearButton onClick={() => setQuery("")} />
+                  ) : undefined
+                }
+                rightSectionPointerEvents="auto"
+                style={{ flex: 1, minWidth: 200 }}
               />
-            </Card>
-          ) : (
-            <>
-              <Grid>
-                {visible.map((coin) => (
-                  <Grid.Col
-                    key={coin.id}
-                    span={{ base: 12, sm: 6, md: 4, lg: 3 }}
-                  >
-                    <CoinCard coin={coin} />
-                  </Grid.Col>
-                ))}
-              </Grid>
+              <Select
+                label="Currency"
+                checkIconPosition="right"
+                data={CURRENCIES}
+                value={vsCurrency}
+                onChange={(v) => setVsCurrency(v ?? "usd")}
+              />
+              <Select
+                label="Sort by"
+                checkIconPosition="right"
+                data={SORT_OPTIONS}
+                value={sortKey}
+                onChange={(v) =>
+                  setSortKey((v as SortKey) ?? "market_cap_rank")
+                }
+              />
+              <ActionIcon
+                variant="default"
+                size="lg"
+                aria-label="Toggle sort direction"
+                onClick={() =>
+                  setDirection(direction === "asc" ? "desc" : "asc")
+                }
+              >
+                {direction === "asc" ? (
+                  <IconArrowUp size={18} />
+                ) : (
+                  <IconArrowDown size={18} />
+                )}
+              </ActionIcon>
+            </Group>
 
+            {visible.length === 0 ? (
+              <Card withBorder padding="xl" radius="md">
+                <EmptyState
+                  icon={<IconSearch size={48} />}
+                  title="No results"
+                  description={`No coins match "${query}". Try a different name or symbol.`}
+                />
+              </Card>
+            ) : (
+              <div className={classes.gridWrapper}>
+                <Grid>
+                  {visible.map((coin) => (
+                    <Grid.Col
+                      key={coin.id}
+                      span={{ base: 12, sm: 6, md: 4, lg: 3 }}
+                    >
+                      <CoinCard coin={coin} />
+                    </Grid.Col>
+                  ))}
+                </Grid>
+              </div>
+            )}
+
+            {visible.length > 0 && (
               <Group justify="center" className={classes.pagination}>
                 <Pagination
                   value={page}
@@ -166,10 +178,10 @@ export default function HomePage() {
                   {perPage} coins per page
                 </Text>
               </Group>
-            </>
-          )}
-        </Stack>
-      )}
-    </Container>
+            )}
+          </Stack>
+        )}
+      </Container>
+    </>
   );
 }

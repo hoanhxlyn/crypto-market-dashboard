@@ -4,11 +4,21 @@
   flex: 1;
 }
 
+.skeleton {
+  flex: 1;
+  overflow-y: auto;
+}
+
 .stack {
   flex: 1;
+  overflow: hidden;
+}
+
+.gridWrapper {
+  flex: 1;
+  overflow-y: auto;
 }
 
 .pagination {
-  margin-top: auto;
   padding-top: var(--mantine-spacing-md);
 }

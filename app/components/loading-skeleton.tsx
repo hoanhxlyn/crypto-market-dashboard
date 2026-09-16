@@ -7,7 +7,7 @@ export function LoadingSkeleton() {
     <Grid>
       {SKELETON_IDS.map((id) => (
         <Grid.Col key={id} span={{ base: 12, sm: 6, md: 4, lg: 3 }}>
-          <Skeleton height={140} radius="md" />
+          <Skeleton height={80} radius="md" />
         </Grid.Col>
       ))}
     </Grid>
