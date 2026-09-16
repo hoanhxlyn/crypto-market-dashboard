@@ -5,7 +5,6 @@ import {
   Card,
   Container,
   Group,
-  NumberFormatter,
   SimpleGrid,
   Skeleton,
   Stack,
@@ -18,6 +17,7 @@ import { ChangeBadge } from "~/components/change-badge";
 import { PriceChart } from "~/components/price-chart";
 import { useCoinDetail } from "~/hooks/queries";
 import { useFilterParams } from "~/hooks/use-filter-params";
+import { formatPrice } from "~/lib/format";
 
 export function meta({ params }: { params: { id: string } }) {
   return [{ title: `Coin Detail — ${params.id}` }];
@@ -111,15 +111,12 @@ export default function CoinDetailPage() {
               <Text size="sm" c="dimmed">
                 Current Price
               </Text>
-              <NumberFormatter
-                value={coin.market_data.current_price[vsCurrency] ?? 0}
-                prefix="$"
-                thousandSeparator
-                style={{
-                  fontWeight: 700,
-                  fontSize: "var(--mantine-font-size-xl)",
-                }}
-              />
+              <Text fw={700} size="xl">
+                {formatPrice(
+                  coin.market_data.current_price[vsCurrency] ?? 0,
+                  vsCurrency,
+                )}
+              </Text>
             </div>
             <div>
               <Text size="sm" c="dimmed">
