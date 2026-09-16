@@ -37,19 +37,17 @@ export default function CoinDetailPage() {
 
   if (status === "pending") {
     return (
-      <Container size={800} py="xl">
-        <Stack gap="lg">
-          <Skeleton height={40} width={200} />
-          <Skeleton height={200} />
-          <Skeleton height={300} />
-        </Stack>
-      </Container>
+      <Stack gap="lg">
+        <Skeleton height={40} width={200} />
+        <Skeleton height={200} />
+        <Skeleton height={300} />
+      </Stack>
     );
   }
 
   if (status === "error") {
     return (
-      <Container size={800} py="xl">
+      <Container size="lg">
         <Stack gap="lg">
           <Alert color="red" title="Failed to load coin">
             Could not fetch data for "{id}". The coin may not exist or the API
@@ -73,16 +71,18 @@ export default function CoinDetailPage() {
   }
 
   return (
-    <Container size={800} py="xl">
+    <Container fluid mx={"lg"}>
       <Stack gap="lg">
-        <Button
-          component={Link}
-          to={`/${location.search}`}
-          variant="subtle"
-          leftSection={<IconArrowLeft size={16} />}
-        >
-          Back to list
-        </Button>
+        <Group>
+          <Button
+            component={Link}
+            to={`/${location.search}`}
+            variant="subtle"
+            leftSection={<IconArrowLeft size={16} />}
+          >
+            Back to list
+          </Button>
+        </Group>
 
         <Group gap="md" align="center" wrap="wrap" justify="space-between">
           <Group gap="md" align="center" wrap="wrap">
